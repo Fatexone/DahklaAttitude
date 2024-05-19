@@ -186,12 +186,6 @@ let isAudioPlaying = false;
 let currentAudioIndex = 0;
 let currentAudio = new Audio();
 
-document.addEventListener('DOMContentLoaded', () => {
-    setupEventListeners();
-    resetTimeSelector();
-    initiateBlinking();
-});
-
 function debugLog(message) {
     console.log(`DEBUG: ${message}`);
 }
@@ -328,6 +322,12 @@ function setupGoButton() {
     });
 }
 
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupEventListeners();
+    resetTimeSelector();
+});
+
 async function playInitialAudio() {
     if (currentAudioIndex < currentCombination.length && !isAudioPlaying) {
         isAudioPlaying = true;
@@ -343,13 +343,13 @@ async function playInitialAudio() {
         await playAudio(programAudioPath);
         updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
 
-        // Préparer pour le prochain audio ou terminer la session
         if (currentAudioIndex === currentCombination.length - 1) {
+            // Jouer l'audio "Lastways" avant l'exercice final
             await handleLastWaysAudio();
         } else {
             currentAudioIndex++;
         }
-        
+
         isAudioPlaying = false; // Réinitialiser l'état après la lecture
 
         updateAudioControlButtons();
@@ -357,6 +357,7 @@ async function playInitialAudio() {
         console.log("Audio is currently playing or no more audio to play.");
     }
 }
+
 
 async function handleLastWaysAudio() {
     const lastWaysAudioPath = './audio/Lastways.mp3';
@@ -408,7 +409,9 @@ function updateUIForAudioPlay(description, isVisible) {
     document.getElementById('tapisImage').style.display = 'none'; 
 }
 
-// Actualiser les boutons de contrôle audio après la lecture
+
+
+
 function updateAudioControlButtons() {
     const nextAudioButton = document.getElementById('nextAudioButton');
     const returnButton = document.getElementById('returnButtonCoaching4');
@@ -447,9 +450,9 @@ async function playAudio(audioPath) {
 function setupNextAudioButton() {
     const nextAudioButton = document.getElementById('nextAudioButton');
     nextAudioButton.addEventListener('click', playCoaching4Audio);
-    // Initialiser le style d'affichage basé sur l'état de la séquence audio
     nextAudioButton.style.display = currentAudioIndex < currentCombination.length ? 'block' : 'none';
 }
+
 function setupReturnToMenuButtonCoaching4() {
     const returnButton = document.getElementById('returnButtonCoaching4');
     if (returnButton) {
