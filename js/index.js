@@ -176,463 +176,458 @@ const programs = {
 
 
  let filesAvailable = JSON.parse(JSON.stringify(programs));
-let filesPlayed = {
-    Coaching3: [],
-    Coaching4: [],
-};
-
-let currentCombination = [];
-let isAudioPlaying = false;
-let currentAudioIndex = 0;
-let currentAudio = new Audio();
-
-function debugLog(message) {
-    console.log(`DEBUG: ${message}`);
-}
-
-// Fonction pour configurer tous les écouteurs d'événements
-function setupEventListeners() {
-    setupReturnToMenuButtonCoaching3();
-    setupReturnToMenuButtonCoaching4(); // Assurez-vous que ce bouton est configuré
-    setupProgramSelector();
-    setupPompesSelector();
-    setupGoButton();
-    setupStopButton();
-    setupNextButton();
-    setupNextAudioButton();
-    setupRetourneMenueButton(); // Assurez-vous que ce bouton est configuré correctement
-    debugLog("Event listeners configured");
-}
-
-function setupProgramSelector() {
-    const programSelect = document.getElementById('programSelect');
-    programSelect.addEventListener('change', handleProgramChange);
-    console.log('Program selector setup complete');
-}
-
-// Gestion du changement de programme
-function handleProgramChange() {
-    debugLog(`Program changed to: ${this.value}`);
-    resetUI(true); // Réinitialiser l'interface utilisateur, garder la sélection si nécessaire
-
-    switch (this.value) {
-        case 'Coaching3': // PLANK
-            initializeCoaching3UI();
-            document.getElementById('programSelect').style.display = 'none'; // Masquer le sélecteur de programme
-            break;
-        case 'Coaching4':
-            initializeCoaching4UI();
-            break;
-        default:
-            document.getElementById('retourneMenue').style.display = 'none'; // Masquer les boutons de retour si aucun des programmes spécifiques n'est sélectionné
-            break;
-    }
-}
-
-function setupNextButton() {
-    const nextButton = document.getElementById('nextButton');
-    nextButton.addEventListener('click', function() {
-        handleNextButtonClick();
-    });
-}
-
-// Traitement du clic sur le bouton suivant
-function handleNextButtonClick() {
-    toggleDisplay('welcomeVideo', false);
-    toggleDisplay('videoDescription', false);
-    toggleDisplay('tapisImage', false); // Masquer le tapisImage
-    toggleDisplay('pompesSelectorContainer', true);
-    toggleDisplay('returnButtonCoaching4', true); // Rendre le bouton retour visible
-
-    // Réinitialiser le sélecteur de pompes
-    const pompesSelector = document.getElementById('pompesSelector');
-    pompesSelector.selectedIndex = 0;
-    document.getElementById('pompesInstruction').style.display = 'none';
-    document.getElementById('startButton').style.display = 'none';
-
-    // Afficher et positionner le returnButton
-    const returnButton = document.getElementById('returnButtonCoaching4');
-    if (returnButton) {
-        returnButton.style.display = 'block';
-        const pompesSelectorContainer = document.getElementById('pompesSelectorContainer');
-        if (pompesSelectorContainer) {
-            pompesSelectorContainer.appendChild(returnButton); // Ajouter le bouton de retour après le sélecteur de pompes
-        }
-    }
-}
-
-function toggleDisplay(elementId, isVisible) {
-    const element = document.getElementById(elementId);
-    if (element) {
-        element.style.display = isVisible ? 'block' : 'none';
-        console.log(`${elementId} ${isVisible ? 'displayed' : 'hidden'}`);
-    } else {
-        console.log(`${elementId} not found`);
-    }
-}
-
-function setupPompesSelector() {
-    const pompesSelector = document.getElementById('pompesSelector');
-    pompesSelector.addEventListener('change', function() {
-        handlePompesSelectorChange(this.value);
-    });
-}
-
-async function handlePompesSelectorChange(value) {
-    if (value) {
-        await calculateProgramCombinations(parseInt(value, 10));
-        toggleDisplay('tapisImage', false); // Assurez-vous que tapisImage reste masqué
-        toggleDisplay('pompesInstruction', true);
-        toggleDisplay('startButton', true);
-        toggleDisplay('returnButtonCoaching4', true); // Assurez-vous que le bouton de retour est toujours visible
-    }
-}
-
-async function calculateProgramCombinations(targetPompes) {
-    const pumpsMapping = {
-        'P1': 3, 'P2': 5, 'P3': 5, 'P4': 7, 'P5': 7, 'P6': 7, 'P7': 9, 'P8': 9, 'P9': 9, 'P10': 9,
-        'P11': 11, 'P12': 11, 'P13': 11, 'P14': 11, 'P15': 11, 'P16': 13, 'P17': 13, 'P18': 13, 'P19': 13,
-        'P20': 13, 'P21': 13, 'P22': 15, 'P23': 15, 'P24': 15, 'P25': 15, 'P26': 15, 'P27': 17, 'P28': 17,
-        'P29': 17, 'P30': 17, 'P31': 19, 'P32': 19, 'P33': 19, 'P34': 21, 'P35': 21, 'P36': 23
-    };
-    let cumulativePumps = 0;
-    let selectedPrograms = [];
-    for (let key in pumpsMapping) {
-        cumulativePumps += pumpsMapping[key];
-        selectedPrograms.push(key);
-        if (cumulativePumps >= targetPompes) break;
-    }
-
-    if (selectedPrograms.length > 0) {
-        currentCombination = selectedPrograms;
-        currentAudioIndex = 0;
-        document.getElementById('pompesInstruction').textContent = `We have selected the programs ${currentCombination.join(', ')} to perform your ${targetPompes} push-ups.`;
-    } else {
-        displayNoCombinationFound();
-    }
-}
-
-function setupGoButton() {
-    const startButton = document.getElementById('startButton');
-    startButton.addEventListener('click', async function() {
-        const pompes = parseInt(document.getElementById('pompesSelector').value, 10);
-        await calculateProgramCombinations(pompes);
-        playInitialAudio(); // Modifier pour lancer la lecture initiale
-        this.style.display = 'none'; // Optionnel: Masquer le bouton après le clic
-    });
-}
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    setupEventListeners();
-    resetTimeSelector();
-});
-
-async function playInitialAudio() {
-    if (currentAudioIndex < currentCombination.length && !isAudioPlaying) {
-        isAudioPlaying = true;
-
-        const wayAudioPath = `./audio/way${currentAudioIndex + 1}.mp3`;
-        const programAudioPath = `./audio/${currentCombination[currentAudioIndex]}.mp3`;
-
-        // Jouer l'audio de "way"
-        await playAudio(wayAudioPath);
-        updateUIForAudioPlay(descriptions.Coaching4[`way${currentAudioIndex + 1}`], true);
-
-        // Jouer l'audio de "P" après "way"
-        await playAudio(programAudioPath);
-        updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
-
-        if (currentAudioIndex === currentCombination.length - 1) {
-            // Jouer l'audio "Lastways" avant l'exercice final
-            await handleLastWaysAudio();
-        } else {
-            currentAudioIndex++;
-        }
-
-        isAudioPlaying = false; // Réinitialiser l'état après la lecture
-
-        updateAudioControlButtons();
-    } else {
-        console.log("Audio is currently playing or no more audio to play.");
-    }
-}
-
-
-async function handleLastWaysAudio() {
-    const lastWaysAudioPath = './audio/Lastways.mp3';
-    await playAudio(lastWaysAudioPath);
-    updateUIForAudioPlay("Closing session with Lastways.", true);
-    updateAudioControlButtons(); // Mise à jour finale des contrôles
-}
-
-async function playCoaching4Audio() {
-    if (currentAudioIndex < currentCombination.length && !isAudioPlaying) {
-        isAudioPlaying = true;
-        try {
-            const wayAudioPath = `./audio/way${currentAudioIndex + 1}.mp3`;
-            const programPath = `./audio/${currentCombination[currentAudioIndex]}.mp3`;
-
-            // Jouer l'audio 'way'
-            await playAudio(wayAudioPath);
-            updateUIForAudioPlay(descriptions.Coaching4[`way${currentAudioIndex + 1}`], true);
-
-            // Jouer l'audio de programme après 'way'
-            await playAudio(programPath);
-            updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
-
-            if (currentAudioIndex === currentCombination.length - 1) {
-                await handleLastWaysAudio();
-            } else {
-                currentAudioIndex++;
-            }
-
-            isAudioPlaying = false; // Réinitialiser l'état après la lecture
-
-            updateAudioControlButtons();
-        } catch (error) {
-            console.error("Error playing sequence: ", error);
-            updateUIForAudioPlay("Erreur de lecture. Veuillez vérifier les fichiers audio.", false);
-            isAudioPlaying = false; // Réinitialiser l'état après une erreur
-        }
-    } else {
-        console.log("Audio is currently playing or no more audio to play.");
-    }
-}
-
-// Mettre à jour l'UI après la lecture
-function updateUIForAudioPlay(description, isVisible) {
-    const audioDescription = document.getElementById('audioDescription');
-    audioDescription.textContent = description;
-    audioDescription.classList.add('text-description'); // Ajout de la classe pour le style
-    audioDescription.style.display = isVisible ? 'block' : 'none';
-    document.getElementById('tapisImage').style.display = 'none'; 
-}
-
-
-
-
-function updateAudioControlButtons() {
-    const nextAudioButton = document.getElementById('nextAudioButton');
-    const returnButton = document.getElementById('returnButtonCoaching4');
-
-    nextAudioButton.style.display = currentAudioIndex < currentCombination.length ? 'block' : 'none';
-    returnButton.style.display = 'block'; // Assurez-vous que le bouton de retour est toujours visible
-    nextAudioButton.onclick = playCoaching4Audio; // S'assurer que le bouton suivant est prêt pour la prochaine piste
-}
-
-async function playAudio(audioPath) {
-    console.log('playAudio called with path:', audioPath);
-    currentAudio.src = audioPath;
-
-    return new Promise((resolve, reject) => {
-        currentAudio.onloadedmetadata = () => {
-            currentAudio.play().then(() => {
-                console.log('Audio is playing:', audioPath);
-            }).catch((e) => {
-                console.error("Error playing audio:", e);
-                reject(e);
-            });
-        };
-
-        currentAudio.onended = () => {
-            console.log('Audio ended:', audioPath);
-            resolve();
-        };
-
-        currentAudio.onerror = () => {
-            console.error('Error loading audio:', currentAudio.error);
-            reject(currentAudio.error);
-        };
-    });
-}
-
-function setupNextAudioButton() {
-    const nextAudioButton = document.getElementById('nextAudioButton');
-    nextAudioButton.addEventListener('click', playCoaching4Audio);
-    nextAudioButton.style.display = currentAudioIndex < currentCombination.length ? 'block' : 'none';
-}
-
-function setupReturnToMenuButtonCoaching4() {
-    const returnButton = document.getElementById('returnButtonCoaching4');
-    if (returnButton) {
-        returnButton.addEventListener('click', function() {
-            stopAudiosAndTimersCoaching4(); // Interrompre l'audio immédiatement
-            hideUIComponents(); // S'assurer que toutes les descriptions sont masquées
-            const programSelect = document.getElementById('programSelect');
-            if (programSelect) {
-                programSelect.selectedIndex = 0; // Réinitialiser le sélecteur de programme à l'option par défaut
-                programSelect.style.display = 'block'; // Afficher le sélecteur de programme
-            }
-            console.log("UI reset, audio stopped, and all descriptions hidden.");
-        });
-    } else {
-        console.log("Return to menu button for Coaching4 not found.");
-    }
-}
-
-
-// Fonction pour gérer le bouton de retour pour Coaching3
-function setupReturnToMenuButtonCoaching3() {
-    const returnButton = document.getElementById('returnButtonCoaching3');
-    if (returnButton) {
-        returnButton.addEventListener('click', function() {
-            stopAudiosAndTimersCoaching3(); // Interrompre l'audio immédiatement
-            hideUIComponents(); // S'assurer que toutes les descriptions sont masquées
-            const programSelect = document.getElementById('programSelect');
-            if (programSelect) {
-                programSelect.selectedIndex = 0; // Réinitialiser le sélecteur de programme à l'option par défaut
-                programSelect.style.display = 'block'; // Afficher le sélecteur de programme
-            }
-            console.log("UI reset, audio stopped, and all descriptions hidden.");
-        });
-    } else {
-        console.log("Return to menu button for Coaching3 not found.");
-    }
-}
-
-// Masquer les composants de l'UI
-function hideUIComponents() {
-    const elementsToHide = ['pompesSelectorContainer', 'pompesInstruction', 'programSelect', 'tapisImage', 'returnButtonCoaching4', 'audioDescription', 'videoDescription', 'returnButtonCoaching3'];
-    elementsToHide.forEach(id => toggleDisplay(id, false));
-    toggleDisplay('programSelect', true); // Le sélecteur de programme doit être réaffiché
-}
-
-function resetSelectors(selectorIds) {
-    selectorIds.forEach(selectorId => {
-        const selector = document.getElementById(selectorId);
-        if (selector) {
-            selector.selectedIndex = 0;
-        }
-    });
-}function initializeCoaching4UI() {
-    const videoContainer = document.getElementById('videoContainer');
-    videoContainer.style.display = 'block';
-    const welcomeVideo = document.getElementById('welcomeVideo');
-    welcomeVideo.style.display = 'block';
-
-    const videoDescription = document.getElementById('videoDescription');
-    videoDescription.textContent = "36 hand positions, from 3 to 468 push-ups and/or 468 seconds of planking.";
-    videoDescription.style.display = 'block';
-
-    // Masquer le sélecteur de programme après avoir sélectionné un programme
-    const programSelect = document.getElementById('programSelect');
-    programSelect.style.display = 'none';
-
-    const nextButton = document.getElementById('nextButton');
-    nextButton.style.display = 'block';
-    nextButton.onclick = showPompesSelector;
-
-    // Afficher l'image du tapis de mains
-    const tapisImage = document.getElementById('tapisImage');
-    tapisImage.style.display = 'block';
-
-    // Afficher le returnButton pour Coaching4
-    const returnButton = document.getElementById('returnButtonCoaching4');
-    if (returnButton) {
-        returnButton.style.display = 'block';
-    }
-}
-
-
-function displayNoCombinationFound() {
-    const pompesInstruction = document.getElementById('pompesInstruction');
-    pompesInstruction.textContent = "No combination found for the selected number of push-ups.";
-    pompesInstruction.style.display = 'block';
-}
-
-function ensureNextButtonExists(container) {
-    let nextButton = document.getElementById('nextButton');
-    if (!nextButton && container) {
-        nextButton = document.createElement('button');
-        nextButton.id = 'nextButton';
-        nextButton.textContent = 'Next';
-        container.appendChild(nextButton);
-    }
-    return nextButton;
-}
-
-function createButton(id, text, container) {
-    const button = document.createElement('button');
-    button.id = id;
-    button.textContent = text;
-    container.appendChild(button);
-    return button;
-}
-
-function updateButtonEventListener(button, eventHandler) {
-    button.removeEventListener('click', eventHandler);
-    button.addEventListener('click', eventHandler);
-}
-
-function showPompesSelector() {
-    const videoContainer = document.getElementById('videoContainer');
-    videoContainer.style.display = 'none';
-
-    const videoDescription = document.getElementById('videoDescription');
-    videoDescription.style.display = 'none';
-
-    const selectorContainer = document.getElementById('pompesSelectorContainer');
-    selectorContainer.style.display = 'block';
-
-    const startButton = document.getElementById('startButton');
-    startButton.style.display = 'none';
-
-    const pompesSelector = document.getElementById('pompesSelector');
-    pompesSelector.onchange = () => {};
-
-    const nextAudioButton = document.getElementById('nextAudioButton');
-    if (nextAudioButton) {
-        nextAudioButton.style.display = 'none';
-    }
-}
-
-function displayLoadingIndicator(show) {
-    const indicator = document.getElementById('loadingIndicator');
-    if (indicator) {
-        indicator.style.display = show ? 'block' : 'none';
-    }
-}
-
-function resetUI(keepSelection = false) {
-    const elementsToHide = [
-        'audioDescription', 'videoContainer', 'pompesSelectorContainer',
-        'nextButton', 'stopButton', 'nextAudioButton', 'returnButtonCoaching4', 'startButton',
-        'videoContainer2', 'welcomeVideo2', 'videoDescription2', 'nextButton2',
-        'tapisImage', 'tapisImage2', 'timeSelector', 'digitalDisplay', 'retourneMenue', 'startTimerButton'
-    ];
-    elementsToHide.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.style.display = 'none';
-        }
-    });
-
-    if (!keepSelection) {
-        const programSelect = document.getElementById('programSelect');
-        if (programSelect) {
-            programSelect.selectedIndex = 0;
-            programSelect.style.display = 'block';
-        }
-    }
-
-    currentAudioIndex = 0;
-    isAudioPlaying = false;
-}
-
-function stopAudiosAndTimersCoaching4() {
-    console.log('Stopping audios and timers for Coaching4...');
-
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        console.log('General audio stopped and reset.');
-    }
-
-    isAudioPlaying = false;
-    console.log('Scheduled audio events cleared for Coaching4.');
-    console.log('Audios and timers stopped and reset for Coaching4.');
-}
+ let filesPlayed = {
+     Coaching3: [],
+     Coaching4: [],
+ };
+ 
+ let currentCombination = [];
+ let isAudioPlaying = false;
+ let currentAudioIndex = 0;
+ let currentAudio = new Audio();
+ 
+ document.addEventListener('DOMContentLoaded', () => {
+     setupEventListeners();
+     resetTimeSelector();
+ });
+ 
+ function debugLog(message) {
+     console.log(`DEBUG: ${message}`);
+ }
+ 
+ // Fonction pour configurer tous les écouteurs d'événements
+ function setupEventListeners() {
+     setupReturnToMenuButtonCoaching3();
+     setupReturnToMenuButtonCoaching4();
+     setupProgramSelector();
+     setupPompesSelector();
+     setupGoButton();
+     setupStopButton();
+     setupNextButton();
+     setupNextAudioButton();
+     setupRetourneMenueButton();
+     debugLog("Event listeners configured");
+ }
+ 
+ function setupProgramSelector() {
+     const programSelect = document.getElementById('programSelect');
+     programSelect.addEventListener('change', handleProgramChange);
+     console.log('Program selector setup complete');
+ }
+ 
+ function handleProgramChange() {
+     debugLog(`Program changed to: ${this.value}`);
+     resetUI(true);
+ 
+     switch (this.value) {
+         case 'Coaching3':
+             initializeCoaching3UI();
+             document.getElementById('programSelect').style.display = 'none';
+             break;
+         case 'Coaching4':
+             initializeCoaching4UI();
+             break;
+         default:
+             document.getElementById('retourneMenue').style.display = 'none';
+             break;
+     }
+ }
+ 
+ function setupNextButton() {
+     const nextButton = document.getElementById('nextButton');
+     nextButton.addEventListener('click', handleNextButtonClick);
+ }
+ 
+ function handleNextButtonClick() {
+     toggleDisplay('welcomeVideo', false);
+     toggleDisplay('videoDescription', false);
+     toggleDisplay('tapisImage', false);
+     toggleDisplay('pompesSelectorContainer', true);
+     toggleDisplay('returnButtonCoaching4', true);
+ 
+     const pompesSelector = document.getElementById('pompesSelector');
+     pompesSelector.selectedIndex = 0;
+     document.getElementById('pompesInstruction').style.display = 'none';
+     document.getElementById('startButton').style.display = 'none';
+ 
+     const returnButton = document.getElementById('returnButtonCoaching4');
+     if (returnButton) {
+         returnButton.style.display = 'block';
+         const pompesSelectorContainer = document.getElementById('pompesSelectorContainer');
+         if (pompesSelectorContainer) {
+             pompesSelectorContainer.appendChild(returnButton);
+         }
+     }
+ }
+ 
+ function toggleDisplay(elementId, isVisible) {
+     const element = document.getElementById(elementId);
+     if (element) {
+         element.style.display = isVisible ? 'block' : 'none';
+         console.log(`${elementId} ${isVisible ? 'displayed' : 'hidden'}`);
+     } else {
+         console.log(`${elementId} not found`);
+     }
+ }
+ 
+ function setupPompesSelector() {
+     const pompesSelector = document.getElementById('pompesSelector');
+     pompesSelector.addEventListener('change', function() {
+         handlePompesSelectorChange(this.value);
+     });
+ }
+ 
+ async function handlePompesSelectorChange(value) {
+     if (value) {
+         await calculateProgramCombinations(parseInt(value, 10));
+         toggleDisplay('tapisImage', false);
+         toggleDisplay('pompesInstruction', true);
+         toggleDisplay('startButton', true);
+         toggleDisplay('returnButtonCoaching4', true);
+     }
+ }
+ 
+ async function calculateProgramCombinations(targetPompes) {
+     const pumpsMapping = {
+         'P1': 3, 'P2': 5, 'P3': 5, 'P4': 7, 'P5': 7, 'P6': 7, 'P7': 9, 'P8': 9, 'P9': 9, 'P10': 9,
+         'P11': 11, 'P12': 11, 'P13': 11, 'P14': 11, 'P15': 11, 'P16': 13, 'P17': 13, 'P18': 13, 'P19': 13,
+         'P20': 13, 'P21': 13, 'P22': 15, 'P23': 15, 'P24': 15, 'P25': 15, 'P26': 15, 'P27': 17, 'P28': 17,
+         'P29': 17, 'P30': 17, 'P31': 19, 'P32': 19, 'P33': 19, 'P34': 21, 'P35': 21, 'P36': 23
+     };
+     let cumulativePumps = 0;
+     let selectedPrograms = [];
+     for (let key in pumpsMapping) {
+         cumulativePumps += pumpsMapping[key];
+         selectedPrograms.push(key);
+         if (cumulativePumps >= targetPompes) break;
+     }
+ 
+     if (selectedPrograms.length > 0) {
+         currentCombination = selectedPrograms;
+         currentAudioIndex = 0;
+         document.getElementById('pompesInstruction').textContent = `We have selected the programs ${currentCombination.join(', ')} to perform your ${targetPompes} push-ups.`;
+     } else {
+         displayNoCombinationFound();
+     }
+ }
+ 
+ function setupGoButton() {
+     const startButton = document.getElementById('startButton');
+     startButton.addEventListener('click', async function() {
+         const pompes = parseInt(document.getElementById('pompesSelector').value, 10);
+         await calculateProgramCombinations(pompes);
+         playInitialAudio();
+         this.style.display = 'none';
+     });
+ }
+ 
+ async function playInitialAudio() {
+     if (currentAudioIndex < currentCombination.length && !isAudioPlaying) {
+         isAudioPlaying = true;
+ 
+         const wayAudioPath = `./audio/way${currentAudioIndex + 1}.mp3`;
+         const programAudioPath = `./audio/${currentCombination[currentAudioIndex]}.mp3`;
+ 
+         await playAudio(wayAudioPath);
+         updateUIForAudioPlay(descriptions.Coaching4[`way${currentAudioIndex + 1}`], true);
+ 
+         await playAudio(programAudioPath);
+         updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
+ 
+         if (currentAudioIndex === currentCombination.length - 1) {
+             await handleLastWaysAudio();
+         } else {
+             currentAudioIndex++;
+         }
+         
+         isAudioPlaying = false;
+ 
+         updateAudioControlButtons();
+     } else {
+         console.log("Audio is currently playing or no more audio to play.");
+     }
+ }
+ 
+ async function handleLastWaysAudio() {
+     const lastWaysAudioPath = './audio/Lastways.mp3';
+     await playAudio(lastWaysAudioPath);
+     updateUIForAudioPlay("Closing session with Lastways.", true);
+     updateAudioControlButtons();
+ }
+ 
+ async function playCoaching4Audio() {
+     if (currentAudioIndex < currentCombination.length && !isAudioPlaying) {
+         isAudioPlaying = true;
+         try {
+             const wayAudioPath = `./audio/way${currentAudioIndex + 1}.mp3`;
+             const programPath = `./audio/${currentCombination[currentAudioIndex]}.mp3`;
+ 
+             await playAudio(wayAudioPath);
+             updateUIForAudioPlay(descriptions.Coaching4[`way${currentAudioIndex + 1}`], true);
+ 
+             await playAudio(programPath);
+             updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
+ 
+             if (currentAudioIndex === currentCombination.length - 1) {
+                 await handleLastWaysAudio();
+             } else {
+                 currentAudioIndex++;
+             }
+ 
+             isAudioPlaying = false;
+ 
+             updateAudioControlButtons();
+         } catch (error) {
+             console.error("Error playing sequence: ", error);
+             updateUIForAudioPlay("Erreur de lecture. Veuillez vérifier les fichiers audio.", false);
+             isAudioPlaying = false;
+         }
+     } else {
+         console.log("Audio is currently playing or no more audio to play.");
+     }
+ }
+ 
+ function updateUIForAudioPlay(description, isVisible) {
+     const audioDescription = document.getElementById('audioDescription');
+     audioDescription.textContent = description;
+     audioDescription.classList.add('text-description');
+     audioDescription.style.display = isVisible ? 'block' : 'none';
+     document.getElementById('tapisImage').style.display = 'none'; 
+ }
+ 
+ function updateAudioControlButtons() {
+     const nextAudioButton = document.getElementById('nextAudioButton');
+     const returnButton = document.getElementById('returnButtonCoaching4');
+ 
+     nextAudioButton.style.display = currentAudioIndex < currentCombination.length ? 'block' : 'none';
+     returnButton.style.display = 'block';
+     nextAudioButton.onclick = playCoaching4Audio;
+ }
+ 
+ async function playAudio(audioPath) {
+     console.log('playAudio called with path:', audioPath);
+     currentAudio.src = audioPath;
+ 
+     return new Promise((resolve, reject) => {
+         currentAudio.onloadedmetadata = () => {
+             currentAudio.play().then(() => {
+                 console.log('Audio is playing:', audioPath);
+             }).catch((e) => {
+                 console.error("Error playing audio:", e);
+                 reject(e);
+             });
+         };
+ 
+         currentAudio.onended = () => {
+             console.log('Audio ended:', audioPath);
+             resolve();
+         };
+ 
+         currentAudio.onerror = () => {
+             console.error('Error loading audio:', currentAudio.error);
+             reject(currentAudio.error);
+         };
+     });
+ }
+ 
+ function setupNextAudioButton() {
+     const nextAudioButton = document.getElementById('nextAudioButton');
+     nextAudioButton.addEventListener('click', playCoaching4Audio);
+     nextAudioButton.style.display = currentAudioIndex < currentCombination.length ? 'block' : 'none';
+ }
+ 
+ function setupReturnToMenuButtonCoaching4() {
+     const returnButton = document.getElementById('returnButtonCoaching4');
+     if (returnButton) {
+         returnButton.addEventListener('click', function() {
+             stopAudiosAndTimersCoaching4();
+             hideUIComponents();
+             const programSelect = document.getElementById('programSelect');
+             if (programSelect) {
+                 programSelect.selectedIndex = 0;
+                 programSelect.style.display = 'block';
+             }
+             console.log("UI reset, audio stopped, and all descriptions hidden.");
+         });
+     } else {
+         console.log("Return to menu button for Coaching4 not found.");
+     }
+ }
+ 
+ function setupReturnToMenuButtonCoaching3() {
+     const returnButton = document.getElementById('returnButtonCoaching3');
+     if (returnButton) {
+         returnButton.addEventListener('click', function() {
+             stopAudiosAndTimersCoaching3();
+             hideUIComponents();
+             const programSelect = document.getElementById('programSelect');
+             if (programSelect) {
+                 programSelect.selectedIndex = 0;
+                 programSelect.style.display = 'block';
+             }
+             console.log("UI reset, audio stopped, and all descriptions hidden.");
+         });
+     } else {
+         console.log("Return to menu button for Coaching3 not found.");
+     }
+ }
+ 
+ function hideUIComponents() {
+     const elementsToHide = ['pompesSelectorContainer', 'pompesInstruction', 'programSelect', 'tapisImage', 'returnButtonCoaching4', 'audioDescription', 'videoDescription', 'returnButtonCoaching3'];
+     elementsToHide.forEach(id => toggleDisplay(id, false));
+     toggleDisplay('programSelect', true);
+ }
+ 
+ function resetSelectors(selectorIds) {
+     selectorIds.forEach(selectorId => {
+         const selector = document.getElementById(selectorId);
+         if (selector) {
+             selector.selectedIndex = 0;
+         }
+     });
+ }
+ 
+ function initializeCoaching4UI() {
+     const videoContainer = document.getElementById('videoContainer');
+     videoContainer.style.display = 'block';
+     const welcomeVideo = document.getElementById('welcomeVideo');
+     welcomeVideo.style.display = 'block';
+ 
+     const videoDescription = document.getElementById('videoDescription');
+     videoDescription.textContent = "36 hand positions, from 3 to 468 push-ups and/or 468 seconds of planking.";
+     videoDescription.style.display = 'block';
+ 
+     const programSelect = document.getElementById('programSelect');
+     programSelect.style.display = 'none';
+ 
+     const nextButton = document.getElementById('nextButton');
+     nextButton.style.display = 'block';
+     nextButton.onclick = showPompesSelector;
+ 
+     const tapisImage = document.getElementById('tapisImage');
+     tapisImage.style.display = 'block';
+ 
+     const returnButton = document.getElementById('returnButtonCoaching4');
+     if (returnButton) {
+         returnButton.style.display = 'block';
+     }
+ }
+ 
+ function displayNoCombinationFound() {
+     const pompesInstruction = document.getElementById('pompesInstruction');
+     pompesInstruction.textContent = "No combination found for the selected number of push-ups.";
+     pompesInstruction.style.display = 'block';
+ }
+ 
+ function ensureNextButtonExists(container) {
+     let nextButton = document.getElementById('nextButton');
+     if (!nextButton && container) {
+         nextButton = document.createElement('button');
+         nextButton.id = 'nextButton';
+         nextButton.textContent = 'Next';
+         container.appendChild(nextButton);
+     }
+     return nextButton;
+ }
+ 
+ function createButton(id, text, container) {
+     const button = document.createElement('button');
+     button.id = id;
+     button.textContent = text;
+     container.appendChild(button);
+     return button;
+ }
+ 
+ function updateButtonEventListener(button, eventHandler) {
+     button.removeEventListener('click', eventHandler);
+     button.addEventListener('click', eventHandler);
+ }
+ 
+ function showPompesSelector() {
+     const videoContainer = document.getElementById('videoContainer');
+     videoContainer.style.display = 'none';
+ 
+     const videoDescription = document.getElementById('videoDescription');
+     videoDescription.style.display = 'none';
+ 
+     const selectorContainer = document.getElementById('pompesSelectorContainer');
+     selectorContainer.style.display = 'block';
+ 
+     const startButton = document.getElementById('startButton');
+     startButton.style.display = 'none';
+ 
+     const pompesSelector = document.getElementById('pompesSelector');
+     pompesSelector.onchange = () => {};
+ 
+     const nextAudioButton = document.getElementById('nextAudioButton');
+     if (nextAudioButton) {
+         nextAudioButton.style.display = 'none';
+     }
+ }
+ 
+ function displayLoadingIndicator(show) {
+     const indicator = document.getElementById('loadingIndicator');
+     if (indicator) {
+         indicator.style.display = show ? 'block' : 'none';
+     }
+ }
+ 
+ function resetUI(keepSelection = false) {
+     const elementsToHide = [
+         'audioDescription', 'videoContainer', 'pompesSelectorContainer',
+         'nextButton', 'stopButton', 'nextAudioButton', 'returnButtonCoaching4', 'startButton',
+         'videoContainer2', 'welcomeVideo2', 'videoDescription2', 'nextButton2',
+         'tapisImage', 'tapisImage2', 'timeSelector', 'digitalDisplay', 'retourneMenue', 'startTimerButton'
+     ];
+     elementsToHide.forEach(id => {
+         const element = document.getElementById(id);
+         if (element) {
+             element.style.display = 'none';
+         }
+     });
+ 
+     if (!keepSelection) {
+         const programSelect = document.getElementById('programSelect');
+         if (programSelect) {
+             programSelect.selectedIndex = 0;
+             programSelect.style.display = 'block';
+         }
+     }
+ 
+     currentAudioIndex = 0;
+     isAudioPlaying = false;
+ }
+ 
+ function stopAudiosAndTimersCoaching4() {
+     console.log('Stopping audios and timers for Coaching4...');
+ 
+     if (currentAudio) {
+         currentAudio.pause();
+         currentAudio.currentTime = 0;
+         console.log('General audio stopped and reset.');
+     }
+ 
+     isAudioPlaying = false;
+     console.log('Scheduled audio events cleared for Coaching4.');
+     console.log('Audios and timers stopped and reset for Coaching4.');
+ }
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 let timerDuration;
 let intervalCoaching3;

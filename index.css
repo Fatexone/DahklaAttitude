@@ -71,7 +71,7 @@ select:focus, input[type="number"]:focus, button:focus {
     }
 }
 
-.video-container, video, .blink, .video-description, .audio-description {
+.video-container, video, .video-description, .audio-description {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -80,7 +80,7 @@ select:focus, input[type="number"]:focus, button:focus {
     margin: 0 auto;
 }
 
-video, .blink, .video-description, .audio-description {
+video, .video-description, .audio-description {
     width: 100%;
     margin: 20px auto;
 }
@@ -103,15 +103,6 @@ video, .blink, .video-description, .audio-description {
         font-size: 2rem;
         padding: 15px 30px;
     }
-}
-
-@keyframes blink-animation {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-
-.blink {
-    animation: blink-animation 1s linear infinite;
 }
 
 .action-button, .return-button {
@@ -155,11 +146,6 @@ video, .blink, .video-description, .audio-description {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
-@keyframes flashYellow {
-    0%, 100% { background-color: transparent; }
-    50% { background-color: yellow; }
-}
-
 .image-container img {
     max-width: 100%;
     height: auto;
@@ -191,30 +177,6 @@ video, .blink, .video-description, .audio-description {
         width: 95%;
         font-size: 0.9rem;
     }
-}
-
-@keyframes flashOrangeLight {
-    0%, 100% { background-color: transparent; }
-    50% { background-color: #FFA500; }
-}
-
-.flash-orange-inner {
-    animation: flashOrangeLight 1s linear infinite;
-}
-
-#programSelect,
-#nextButton,
-#nextButton2,
-#timeSelector,
-#startTimerButton,
-#pompesSelectorContainer,
-
-#pompesSelectorContainer {
-    animation: flashOrangeLight 1s linear infinite;
-}
-
-#timeDurationSelector > .flash-orange-inner {
-    animation: flashOrangeLight 1s linear infinite;
 }
 
 .homepage-title {
