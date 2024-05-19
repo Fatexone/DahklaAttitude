@@ -174,7 +174,6 @@ const programs = {
  
  };
 
-
  let filesAvailable = JSON.parse(JSON.stringify(programs));
  let filesPlayed = {
      Coaching3: [],
@@ -185,6 +184,7 @@ const programs = {
  let isAudioPlaying = false;
  let currentAudioIndex = 0;
  let currentAudio = new Audio();
+ let isLastWaysPlayed = false;
  
  document.addEventListener('DOMContentLoaded', () => {
      setupEventListeners();
@@ -305,6 +305,7 @@ const programs = {
      if (selectedPrograms.length > 0) {
          currentCombination = selectedPrograms;
          currentAudioIndex = 0;
+         isLastWaysPlayed = false;
          document.getElementById('pompesInstruction').textContent = `We have selected the programs ${currentCombination.join(', ')} to perform your ${targetPompes} push-ups.`;
      } else {
          displayNoCombinationFound();
@@ -322,70 +323,63 @@ const programs = {
  }
  
  async function playInitialAudio() {
-     if (currentAudioIndex < currentCombination.length && !isAudioPlaying) {
-         isAudioPlaying = true;
- 
-         const wayAudioPath = `./audio/way${currentAudioIndex + 1}.mp3`;
-         const programAudioPath = `./audio/${currentCombination[currentAudioIndex]}.mp3`;
- 
-         await playAudio(wayAudioPath);
-         updateUIForAudioPlay(descriptions.Coaching4[`way${currentAudioIndex + 1}`], true);
- 
-         await playAudio(programAudioPath);
-         updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
- 
-         if (currentAudioIndex === currentCombination.length - 1) {
-             await handleLastWaysAudio();
-         } else {
-             currentAudioIndex++;
-         }
-         
-         isAudioPlaying = false;
- 
-         updateAudioControlButtons();
-     } else {
-         console.log("Audio is currently playing or no more audio to play.");
-     }
- }
- 
- async function handleLastWaysAudio() {
-     const lastWaysAudioPath = './audio/Lastways.mp3';
-     await playAudio(lastWaysAudioPath);
-     updateUIForAudioPlay("Closing session with Lastways.", true);
-     updateAudioControlButtons();
- }
- 
- async function playCoaching4Audio() {
-     if (currentAudioIndex < currentCombination.length && !isAudioPlaying) {
-         isAudioPlaying = true;
-         try {
-             const wayAudioPath = `./audio/way${currentAudioIndex + 1}.mp3`;
-             const programPath = `./audio/${currentCombination[currentAudioIndex]}.mp3`;
- 
-             await playAudio(wayAudioPath);
-             updateUIForAudioPlay(descriptions.Coaching4[`way${currentAudioIndex + 1}`], true);
- 
-             await playAudio(programPath);
-             updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
- 
-             if (currentAudioIndex === currentCombination.length - 1) {
-                 await handleLastWaysAudio();
-             } else {
-                 currentAudioIndex++;
-             }
- 
-             isAudioPlaying = false;
- 
-             updateAudioControlButtons();
-         } catch (error) {
-             console.error("Error playing sequence: ", error);
-             updateUIForAudioPlay("Erreur de lecture. Veuillez vérifier les fichiers audio.", false);
-             isAudioPlaying = false;
-         }
-     } else {
-         console.log("Audio is currently playing or no more audio to play.");
-     }
- }
+    if (currentAudioIndex < currentCombination.length && !isAudioPlaying) {
+        isAudioPlaying = true;
+
+        if (currentAudioIndex === currentCombination.length - 1 && !isLastWaysPlayed) {
+            await playAudio('./audio/Lastways.mp3');
+            updateUIForAudioPlay("Closing session with Lastways.", true);
+            isLastWaysPlayed = true;
+        }
+
+        const programAudioPath = `./audio/${currentCombination[currentAudioIndex]}.mp3`;
+
+        await playAudio(programAudioPath);
+        updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
+
+        if (currentAudioIndex === currentCombination.length - 1) {
+            isAudioPlaying = false;
+            updateAudioControlButtons();
+        } else {
+            currentAudioIndex++;
+            isAudioPlaying = false;
+        }
+    } else {
+        console.log("Audio is currently playing or no more audio to play.");
+    }
+}
+async function playCoaching4Audio() {
+    if (currentAudioIndex < currentCombination.length && !isAudioPlaying) {
+        isAudioPlaying = true;
+        try {
+            if (currentAudioIndex === currentCombination.length - 1 && !isLastWaysPlayed) {
+                await playAudio('./audio/Lastways.mp3');
+                updateUIForAudioPlay("Closing session with Lastways.", true);
+                isLastWaysPlayed = true;
+            }
+
+            const programPath = `./audio/${currentCombination[currentAudioIndex]}.mp3`;
+
+            await playAudio(programPath);
+            updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
+
+            if (currentAudioIndex === currentCombination.length - 1) {
+                isAudioPlaying = false;
+                updateAudioControlButtons();
+            } else {
+                currentAudioIndex++;
+                isAudioPlaying = false;
+            }
+        } catch (error) {
+            console.error("Error playing sequence: ", error);
+            updateUIForAudioPlay("Erreur de lecture. Veuillez vérifier les fichiers audio.", false);
+            isAudioPlaying = false;
+        }
+    } else {
+        console.log("Audio is currently playing or no more audio to play.");
+    }
+}
+
  
  function updateUIForAudioPlay(description, isVisible) {
      const audioDescription = document.getElementById('audioDescription');
@@ -394,16 +388,19 @@ const programs = {
      audioDescription.style.display = isVisible ? 'block' : 'none';
      document.getElementById('tapisImage').style.display = 'none'; 
  }
- 
  function updateAudioControlButtons() {
-     const nextAudioButton = document.getElementById('nextAudioButton');
-     const returnButton = document.getElementById('returnButtonCoaching4');
- 
-     nextAudioButton.style.display = currentAudioIndex < currentCombination.length ? 'block' : 'none';
-     returnButton.style.display = 'block';
-     nextAudioButton.onclick = playCoaching4Audio;
- }
- 
+    const nextAudioButton = document.getElementById('nextAudioButton');
+    const returnButton = document.getElementById('returnButtonCoaching4');
+
+    if (currentAudioIndex >= currentCombination.length) {
+        nextAudioButton.style.display = 'none';
+    } else {
+        nextAudioButton.style.display = 'block';
+    }
+    returnButton.style.display = 'block';
+    nextAudioButton.onclick = playCoaching4Audio;
+}
+
  async function playAudio(audioPath) {
      console.log('playAudio called with path:', audioPath);
      currentAudio.src = audioPath;
