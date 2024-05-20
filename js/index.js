@@ -173,7 +173,6 @@ const programs = {
  },
  
  };
-
  let filesAvailable = JSON.parse(JSON.stringify(programs));
  let filesPlayed = {
      Coaching3: [],
@@ -208,32 +207,30 @@ const programs = {
      setupRetourneMenueButton();
      debugLog("Event listeners configured");
  }
-
  
  function setupProgramSelector() {
-    const programSelect = document.getElementById('programSelect');
-    programSelect.addEventListener('change', handleProgramChange);
-    console.log('Program selector setup complete');
-}
-
-function handleProgramChange() {
-    debugLog(`Program changed to: ${this.value}`);
-    resetUI(true);
-
-    switch (this.value) {
-        case 'Coaching3':
-            initializeCoaching3UI();
-            document.getElementById('programSelect').style.display = 'none';
-            break;
-        case 'Coaching4':
-            initializeCoaching4UI();
-            break;
-        default:
-            document.getElementById('retourneMenue').style.display = 'none';
-            break;
-    }
-}
-
+     const programSelect = document.getElementById('programSelect');
+     programSelect.addEventListener('change', handleProgramChange);
+     console.log('Program selector setup complete');
+ }
+ 
+ function handleProgramChange() {
+     debugLog(`Program changed to: ${this.value}`);
+     resetUI(true);
+ 
+     switch (this.value) {
+         case 'Coaching3':
+             initializeCoaching3UI();
+             document.getElementById('programSelect').style.display = 'none';
+             break;
+         case 'Coaching4':
+             initializeCoaching4UI();
+             break;
+         default:
+             document.getElementById('retourneMenue').style.display = 'none';
+             break;
+     }
+ }
  
  function setupNextButton() {
      const nextButton = document.getElementById('nextButton');
@@ -273,186 +270,140 @@ function handleProgramChange() {
  }
  
  function setupPompesSelector() {
-    const pompesSelector = document.getElementById('pompesSelector');
-    pompesSelector.addEventListener('change', function() {
-        handlePompesSelectorChange(this.value);
-    });
-}
-
-async function handlePompesSelectorChange(value) {
-    if (value) {
-        await calculateProgramCombinations(parseInt(value, 10));
-        toggleDisplay('tapisImage', false);
-        toggleDisplay('pompesInstruction', true);
-        toggleDisplay('startButton', true);
-        toggleDisplay('returnButtonCoaching4', true);
-    }
-}
-
+     const pompesSelector = document.getElementById('pompesSelector');
+     pompesSelector.addEventListener('change', function() {
+         handlePompesSelectorChange(this.value);
+     });
+ }
+ 
+ async function handlePompesSelectorChange(value) {
+     if (value) {
+         await calculateProgramCombinations(parseInt(value, 10));
+         toggleDisplay('tapisImage', false);
+         toggleDisplay('pompesInstruction', true);
+         toggleDisplay('startButton', true);
+         toggleDisplay('returnButtonCoaching4', true);
+     }
+ }
  
  async function calculateProgramCombinations(targetPompes) {
-    const pumpsMapping = {
-        'P1': 3, 'P2': 5, 'P3': 5, 'P4': 7, 'P5': 7, 'P6': 7, 'P7': 9, 'P8': 9, 'P9': 9, 'P10': 9,
-        'P11': 11, 'P12': 11, 'P13': 11, 'P14': 11, 'P15': 11, 'P16': 13, 'P17': 13, 'P18': 13, 'P19': 13,
-        'P20': 13, 'P21': 13, 'P22': 15, 'P23': 15, 'P24': 15, 'P25': 15, 'P26': 15, 'P27': 17, 'P28': 17,
-        'P29': 17, 'P30': 17, 'P31': 19, 'P32': 19, 'P33': 19, 'P34': 21, 'P35': 21, 'P36': 23
-    };
-    let cumulativePumps = 0;
-    let selectedPrograms = [];
-    for (let key in pumpsMapping) {
-        cumulativePumps += pumpsMapping[key];
-        selectedPrograms.push(key);
-        if (cumulativePumps >= targetPompes) break;
-    }
-
-    if (selectedPrograms.length > 0) {
-        currentCombination = selectedPrograms;
-        currentAudioIndex = 0;
-        isLastWaysPlayed = false;
-        document.getElementById('pompesInstruction').textContent = `We have selected the programs ${currentCombination.join(', ')} to perform your ${targetPompes} push-ups.`;
-    } else {
-        displayNoCombinationFound();
-    }
-}
-
- function setupGoButton() {
-    const startButton = document.getElementById('startButton');
-    startButton.addEventListener('click', async function() {
-        const pompes = parseInt(document.getElementById('pompesSelector').value, 10);
-        await calculateProgramCombinations(pompes);
-        playInitialAudio();
-        this.style.display = 'none';
-    });
-}
-
-
-async function playInitialAudio() {
-    if (!isAudioPlaying) {
-        isAudioPlaying = true;
-
-        const wayAudioPath = `./audio/way${currentAudioIndex + 1}.mp3`;
-        const programAudioPath = `./audio/${currentCombination[currentAudioIndex]}.mp3`;
-
-        await playAudio(wayAudioPath);
-        updateUIForAudioPlay(descriptions.Coaching4[`way${currentAudioIndex + 1}`], true);
-
-        await playAudio(programAudioPath);
-        updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
-
-        if (currentAudioIndex === currentCombination.length - 1) {
-            isAudioPlaying = false;
-            updateAudioControlButtons(true);
-        } else {
-            currentAudioIndex++;
-            isAudioPlaying = false;
-            updateAudioControlButtons(false);
-        }
-    } else {
-        console.log("Audio is currently playing or no more audio to play.");
-    }
-}
-
-
-async function playCoaching4Audio() {
-    if (!isAudioPlaying) {
-        isAudioPlaying = true;
-        try {
-            const wayAudioPath = `./audio/way${currentAudioIndex + 1}.mp3`;
-            const programPath = `./audio/${currentCombination[currentAudioIndex]}.mp3`;
-
-            await playAudio(wayAudioPath);
-            updateUIForAudioPlay(descriptions.Coaching4[`way${currentAudioIndex + 1}`], true);
-
-            if (currentAudioIndex === currentCombination.length - 1 && !isLastWaysPlayed) {
-                await playAudio('./audio/Lastways.mp3');
-                updateUIForAudioPlay("Closing session with Lastways.", true);
-                isLastWaysPlayed = true;
-            }
-
-            await playAudio(wayAudioPath);
-            updateUIForAudioPlay(descriptions.Coaching4[`way${currentAudioIndex + 1}`], true);
-
-            if (currentAudioIndex === currentCombination.length - 1 && !isLastWaysPlayed) {
-                await playAudio('./audio/Lastways.mp3');
-                updateUIForAudioPlay("Closing session with Lastways.", true);
-                isLastWaysPlayed = true;
-            }
-
-            await playAudio(programPath);
-            updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
-
-            if (currentAudioIndex === currentCombination.length - 1) {
-                isAudioPlaying = false;
-                updateAudioControlButtons(true);
-            } else {
-                currentAudioIndex++;
-                isAudioPlaying = false;
-                updateAudioControlButtons(false);
-            }
-        } catch (error) {
-            console.error("Error playing sequence: ", error);
-            updateUIForAudioPlay("Erreur de lecture. Veuillez vérifier les fichiers audio.", false);
-            isAudioPlaying = false;
-        }
-    } else {
-        console.log("Audio is currently playing or no more audio to play.");
-    }
-}
-
-
+     const pumpsMapping = {
+         'P1': 3, 'P2': 5, 'P3': 5, 'P4': 7, 'P5': 7, 'P6': 7, 'P7': 9, 'P8': 9, 'P9': 9, 'P10': 9,
+         'P11': 11, 'P12': 11, 'P13': 11, 'P14': 11, 'P15': 11, 'P16': 13, 'P17': 13, 'P18': 13, 'P19': 13,
+         'P20': 13, 'P21': 13, 'P22': 15, 'P23': 15, 'P24': 15, 'P25': 15, 'P26': 15, 'P27': 17, 'P28': 17,
+         'P29': 17, 'P30': 17, 'P31': 19, 'P32': 19, 'P33': 19, 'P34': 21, 'P35': 21, 'P36': 23
+     };
+     let cumulativePumps = 0;
+     let selectedPrograms = [];
+     for (let key in pumpsMapping) {
+         cumulativePumps += pumpsMapping[key];
+         selectedPrograms.push(key);
+         if (cumulativePumps >= targetPompes) break;
+     }
  
-function updateUIForAudioPlay(description, isVisible) {
-    const audioDescription = document.getElementById('audioDescription');
-    audioDescription.textContent = description;
-    audioDescription.classList.add('text-description');
-    audioDescription.style.display = isVisible ? 'block' : 'none';
-    document.getElementById('tapisImage').style.display = 'none'; 
-}
-
-function updateAudioControlButtons(isLastAudio) {
-    const nextAudioButton = document.getElementById('nextAudioButton');
-    const returnButton = document.getElementById('returnButtonCoaching4');
-
-    if (isLastAudio) {
-        nextAudioButton.style.display = 'none';
-    } else {
-        nextAudioButton.style.display = 'block';
-    }
-    returnButton.style.display = 'block';
-    nextAudioButton.onclick = playCoaching4Audio;
-}
-
-async function playAudio(audioPath) {
-    console.log('playAudio called with path:', audioPath);
-    currentAudio.src = audioPath;
-
-    return new Promise((resolve, reject) => {
-        currentAudio.onloadedmetadata = () => {
-            currentAudio.play().then(() => {
-                console.log('Audio is playing:', audioPath);
-            }).catch((e) => {
-                console.error("Error playing audio:", e);
-                reject(e);
-            });
-        };
-
-        currentAudio.onended = () => {
-            console.log('Audio ended:', audioPath);
-            resolve();
-        };
-
-        currentAudio.onerror = () => {
-            console.error('Error loading audio:', currentAudio.error);
-            reject(currentAudio.error);
-        };
-    });
-}
-
+     if (selectedPrograms.length > 0) {
+         currentCombination = selectedPrograms;
+         currentAudioIndex = 0;
+         isLastWaysPlayed = false;
+         document.getElementById('pompesInstruction').textContent = `We have selected the programs ${currentCombination.join(', ')} to perform your ${targetPompes} push-ups.`;
+     } else {
+         displayNoCombinationFound();
+     }
+ }
+ 
+ function setupGoButton() {
+     const startButton = document.getElementById('startButton');
+     startButton.addEventListener('click', async function() {
+         const pompes = parseInt(document.getElementById('pompesSelector').value, 10);
+         await calculateProgramCombinations(pompes);
+         playNextAudio();
+         this.style.display = 'none';
+     });
+ }
+ 
+ async function playNextAudio() {
+     if (!isAudioPlaying) {
+         isAudioPlaying = true;
+ 
+         const wayAudioPath = `./audio/way${currentAudioIndex + 1}.mp3`;
+         const programAudioPath = `./audio/${currentCombination[currentAudioIndex]}.mp3`;
+ 
+         await playAudio(wayAudioPath);
+         updateUIForAudioPlay(descriptions.Coaching4[`way${currentAudioIndex + 1}`], true);
+ 
+         if (currentAudioIndex === currentCombination.length - 1 && !isLastWaysPlayed) {
+             await playAudio('./audio/Lastways.mp3');
+             updateUIForAudioPlay("Closing session with Lastways.", true);
+             isLastWaysPlayed = true;
+         }
+ 
+         await playAudio(programAudioPath);
+         updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
+ 
+         if (currentAudioIndex === currentCombination.length - 1) {
+             isAudioPlaying = false;
+             updateAudioControlButtons(true);
+         } else {
+             currentAudioIndex++;
+             isAudioPlaying = false;
+             updateAudioControlButtons(false);
+         }
+     } else {
+         console.log("Audio is currently playing or no more audio to play.");
+     }
+ }
+ 
+ function updateUIForAudioPlay(description, isVisible) {
+     const audioDescription = document.getElementById('audioDescription');
+     audioDescription.textContent = description;
+     audioDescription.classList.add('text-description');
+     audioDescription.style.display = isVisible ? 'block' : 'none';
+     document.getElementById('tapisImage').style.display = 'none'; 
+ }
+ 
+ function updateAudioControlButtons(isLastAudio) {
+     const nextAudioButton = document.getElementById('nextAudioButton');
+     const returnButton = document.getElementById('returnButtonCoaching4');
+ 
+     if (isLastAudio) {
+         nextAudioButton.style.display = 'none';
+     } else {
+         nextAudioButton.style.display = 'block';
+     }
+     returnButton.style.display = 'block';
+     nextAudioButton.onclick = playNextAudio;
+ }
+ 
+ async function playAudio(audioPath) {
+     console.log('playAudio called with path:', audioPath);
+     currentAudio.src = audioPath;
+ 
+     return new Promise((resolve, reject) => {
+         currentAudio.onloadedmetadata = () => {
+             currentAudio.play().then(() => {
+                 console.log('Audio is playing:', audioPath);
+             }).catch((e) => {
+                 console.error("Error playing audio:", e);
+                 reject(e);
+             });
+         };
+ 
+         currentAudio.onended = () => {
+             console.log('Audio ended:', audioPath);
+             resolve();
+         };
+ 
+         currentAudio.onerror = () => {
+             console.error('Error loading audio:', currentAudio.error);
+             reject(currentAudio.error);
+         };
+     });
+ }
  
  function setupNextAudioButton() {
      const nextAudioButton = document.getElementById('nextAudioButton');
-     nextAudioButton.addEventListener('click', playCoaching4Audio);
-     nextAudioButton.style.display = currentAudioIndex < currentCombination.length ? 'block' : 'none';
+     nextAudioButton.addEventListener('click', playNextAudio);
+     nextAudioButton.style.display = 'none';
  }
  
  function setupReturnToMenuButtonCoaching4() {
