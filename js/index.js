@@ -360,7 +360,7 @@ const programs = {
      audioDescription.textContent = description;
      audioDescription.classList.add('text-description');
      audioDescription.style.display = isVisible ? 'block' : 'none';
-     document.getElementById('tapisImage').style.display = 'none'; 
+     document.getElementById('tapisImage').style.display = 'none';
  }
  
  function updateAudioControlButtons(isLastAudio) {
@@ -410,7 +410,7 @@ const programs = {
  function setupNextAudioButton() {
      const nextAudioButton = document.getElementById('nextAudioButton');
      nextAudioButton.addEventListener('click', playNextAudio);
-     nextAudioButton.style.display = 'block';
+     nextAudioButton.style.display = 'none';
  }
  
  function setupReturnToMenuButtonCoaching4() {
@@ -588,7 +588,9 @@ const programs = {
      console.log('Scheduled audio events cleared for Coaching4.');
      console.log('Audios and timers stopped and reset for Coaching4.');
  }
-//Test3 
+ 
+//Test33
+
 
 
 
