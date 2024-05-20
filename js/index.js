@@ -312,14 +312,16 @@ const programs = {
  }
  
  function setupGoButton() {
-     const startButton = document.getElementById('startButton');
-     startButton.addEventListener('click', async function() {
-         const pompes = parseInt(document.getElementById('pompesSelector').value, 10);
-         await calculateProgramCombinations(pompes);
-         playNextAudio();
-         this.style.display = 'none';
-     });
- }
+    const startButton = document.getElementById('startButton');
+    startButton.addEventListener('click', async function() {
+        const pompes = parseInt(document.getElementById('pompesSelector').value, 10);
+        await calculateProgramCombinations(pompes);
+        toggleDisplay('pompesSelectorContainer', false); // Masquer le sélecteur de pompes
+        playNextAudio();
+        this.style.display = 'none';
+    });
+}
+
  
  async function playNextAudio() {
      if (!isAudioPlaying) {
@@ -360,45 +362,24 @@ const programs = {
      audioDescription.style.display = isVisible ? 'block' : 'none';
      document.getElementById('tapisImage').style.display = 'none'; 
  }
- 
  function updateAudioControlButtons(isLastAudio) {
-     const nextAudioButton = document.getElementById('nextAudioButton');
-     const returnButton = document.getElementById('returnButtonCoaching4');
- 
-     if (isLastAudio) {
-         nextAudioButton.style.display = 'none';
-     } else {
-         nextAudioButton.style.display = 'block';
-     }
-     returnButton.style.display = 'block';
-     nextAudioButton.onclick = playNextAudio;
- }
- 
- async function playAudio(audioPath) {
-     console.log('playAudio called with path:', audioPath);
-     currentAudio.src = audioPath;
- 
-     return new Promise((resolve, reject) => {
-         currentAudio.onloadedmetadata = () => {
-             currentAudio.play().then(() => {
-                 console.log('Audio is playing:', audioPath);
-             }).catch((e) => {
-                 console.error("Error playing audio:", e);
-                 reject(e);
-             });
-         };
- 
-         currentAudio.onended = () => {
-             console.log('Audio ended:', audioPath);
-             resolve();
-         };
- 
-         currentAudio.onerror = () => {
-             console.error('Error loading audio:', currentAudio.error);
-             reject(currentAudio.error);
-         };
-     });
- }
+    const nextAudioButton = document.getElementById('nextAudioButton');
+    const returnButton = document.getElementById('returnButtonCoaching4');
+
+    if (isLastAudio) {
+        nextAudioButton.style.display = 'none';
+
+        // Réinitialiser et afficher le sélecteur de pompes
+        const pompesSelector = document.getElementById('pompesSelector');
+        pompesSelector.selectedIndex = 0; // Réinitialiser à la valeur par défaut
+        toggleDisplay('pompesSelectorContainer', true); // Afficher le sélecteur de pompes
+    } else {
+        nextAudioButton.style.display = 'block';
+    }
+    returnButton.style.display = 'block';
+    nextAudioButton.onclick = playNextAudio;
+}
+
  
  function setupNextAudioButton() {
      const nextAudioButton = document.getElementById('nextAudioButton');
