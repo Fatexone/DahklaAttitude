@@ -187,10 +187,12 @@ const programs = {
  let isLastWaysPlayed = false;
  
  document.addEventListener('DOMContentLoaded', () => {
-     setupEventListeners();
-     resetTimeSelector();
- });
- 
+    setupEventListeners();
+    resetTimeSelector();
+    // Initialisation correcte du bouton nextAudioButton
+    setupNextAudioButton();
+});
+
  function debugLog(message) {
      console.log(`DEBUG: ${message}`);
  }
