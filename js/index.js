@@ -173,6 +173,7 @@ const programs = {
  },
  
  };
+
  let filesAvailable = JSON.parse(JSON.stringify(programs));
  let filesPlayed = {
      Coaching3: [],
@@ -316,6 +317,7 @@ const programs = {
      startButton.addEventListener('click', async function() {
          const pompes = parseInt(document.getElementById('pompesSelector').value, 10);
          await calculateProgramCombinations(pompes);
+         toggleDisplay('pompesSelectorContainer', false); // Masquer le sélecteur de pompes
          playNextAudio();
          this.style.display = 'none';
      });
@@ -367,6 +369,11 @@ const programs = {
  
      if (isLastAudio) {
          nextAudioButton.style.display = 'none';
+ 
+         // Réinitialiser et afficher le sélecteur de pompes
+         const pompesSelector = document.getElementById('pompesSelector');
+         pompesSelector.selectedIndex = 0; // Réinitialiser à la valeur par défaut
+         toggleDisplay('pompesSelectorContainer', true); // Afficher le sélecteur de pompes
      } else {
          nextAudioButton.style.display = 'block';
      }
@@ -581,6 +588,7 @@ const programs = {
      console.log('Scheduled audio events cleared for Coaching4.');
      console.log('Audios and timers stopped and reset for Coaching4.');
  }
+// test
  
 
 
