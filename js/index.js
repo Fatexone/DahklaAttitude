@@ -371,6 +371,12 @@ const programs = {
      audioDescription.style.display = isVisible ? 'block' : 'none';
      document.getElementById('tapisImage').style.display = 'none';
  }
+
+
+
+
+
+
  function updateAudioControlButtons(isLastAudio) {
     const nextAudioButton = document.getElementById('nextAudioButton');
     const returnButton = document.getElementById('returnButtonCoaching4');
@@ -390,7 +396,22 @@ const programs = {
     }
     returnButton.style.display = 'block';
     nextAudioButton.onclick = playNextAudio;
+     // Log pour vérifier l'état du bouton après mise à jour
+     console.log('nextAudioButton style:', nextAudioButton.style.display);
 }
+
+
+console.log('nextAudioButton display style after update:', nextAudioButton.style.display);
+console.log('nextAudioButton visibility:', window.getComputedStyle(nextAudioButton).visibility);
+console.log('nextAudioButton client rect:', nextAudioButton.getBoundingClientRect());
+
+
+
+nextAudioButton.addEventListener('click', () => {
+    console.log('nextAudioButton clicked');
+});
+
+
 
  async function playAudio(audioPath) {
      console.log('playAudio called with path:', audioPath);
