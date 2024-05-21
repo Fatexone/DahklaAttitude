@@ -191,6 +191,14 @@ const programs = {
     resetTimeSelector();
     setupNextAudioButton();
     console.log("DOMContentLoaded event fired, setupEventListeners, resetTimeSelector, and setupNextAudioButton called");
+
+    // Vérification initiale de nextAudioButton
+    const nextAudioButton = document.getElementById('nextAudioButton');
+    if (nextAudioButton) {
+        console.log('nextAudioButton found and initialized');
+    } else {
+        console.error('nextAudioButton not found on initial load');
+    }
 });
 
  function debugLog(message) {
@@ -376,7 +384,6 @@ const programs = {
 
 
 
-
  function updateAudioControlButtons(isLastAudio) {
     const nextAudioButton = document.getElementById('nextAudioButton');
     const returnButton = document.getElementById('returnButtonCoaching4');
@@ -394,22 +401,17 @@ const programs = {
         nextAudioButton.style.display = 'block';
         console.log('Next audio to play, showing nextAudioButton');
     }
+
     returnButton.style.display = 'block';
     nextAudioButton.onclick = playNextAudio;
-     // Log pour vérifier l'état du bouton après mise à jour
-     console.log('nextAudioButton style:', nextAudioButton.style.display);
+
+    // Log pour vérifier l'état du bouton après mise à jour
+    console.log('nextAudioButton display style after update:', nextAudioButton.style.display);
+    console.log('nextAudioButton visibility:', window.getComputedStyle(nextAudioButton).visibility);
+    console.log('nextAudioButton client rect:', nextAudioButton.getBoundingClientRect());
 }
 
 
-console.log('nextAudioButton display style after update:', nextAudioButton.style.display);
-console.log('nextAudioButton visibility:', window.getComputedStyle(nextAudioButton).visibility);
-console.log('nextAudioButton client rect:', nextAudioButton.getBoundingClientRect());
-
-
-
-nextAudioButton.addEventListener('click', () => {
-    console.log('nextAudioButton clicked');
-});
 
 
 
@@ -445,17 +447,23 @@ nextAudioButton.addEventListener('click', () => {
     // Any setup logic for Coaching4 can be added here
 }
 
-
- function setupNextAudioButton() {
+function setupNextAudioButton() {
     const nextAudioButton = document.getElementById('nextAudioButton');
     if (nextAudioButton) {
         nextAudioButton.addEventListener('click', playNextAudio);
         nextAudioButton.style.display = 'none';
-        console.log("nextAudioButton initialized and hidden");
+        console.log('nextAudioButton initialized and hidden');
+
+        // Ajouter l'écouteur de clic ici
+        nextAudioButton.addEventListener('click', () => {
+            console.log('nextAudioButton clicked');
+        });
+
     } else {
-        console.error("nextAudioButton not found in the DOM");
+        console.error('nextAudioButton not found in the DOM');
     }
 }
+
 
  function setupReturnToMenuButtonCoaching4() {
      const returnButton = document.getElementById('returnButtonCoaching4');
