@@ -201,10 +201,8 @@ const programs = {
     }
 });
 
- function debugLog(message) {
-     console.log(`DEBUG: ${message}`);
- }
- 
+
+
  // Fonction pour configurer tous les écouteurs d'événements
  function setupEventListeners() {
      setupReturnToMenuButtonCoaching3();
@@ -337,6 +335,9 @@ const programs = {
 
  async function playNextAudio() {
     console.log("playNextAudio called");
+    console.log(`isAudioPlaying: ${isAudioPlaying}`);
+    console.log(`currentAudioIndex: ${currentAudioIndex}`);
+    console.log(`currentCombination: ${currentCombination}`);
     if (!isAudioPlaying) {
         isAudioPlaying = true;
 
