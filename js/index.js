@@ -489,7 +489,7 @@ async function playAudio(audioPath) {
  }
  
  function hideUIComponents() {
-     const elementsToHide = ['pompesSelectorContainer', 'pompesInstruction', 'programSelect', 'tapisImage', 'returnButtonCoaching4', 'audioDescription', 'videoDescription', 'returnButtonCoaching3'];
+     const elementsToHide = ['pompesSelectorContainer', 'pompesInstruction', 'programSelect', 'retourneMenue','tapisImage', 'returnButtonCoaching4', 'audioDescription', 'videoDescription', 'returnButtonCoaching3'];
      elementsToHide.forEach(id => toggleDisplay(id, false));
      toggleDisplay('programSelect', true);
  }
@@ -520,8 +520,6 @@ async function playAudio(audioPath) {
      nextButton.style.display = 'block';
      nextButton.onclick = showPompesSelector;
  
-     const tapisImage = document.getElementById('tapisImage');
-     tapisImage.style.display = 'block';
  
      const returnButton = document.getElementById('returnButtonCoaching4');
      if (returnButton) {
