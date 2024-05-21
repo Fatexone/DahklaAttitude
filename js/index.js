@@ -192,22 +192,12 @@ const programs = {
     setupNextAudioButton();
     console.log("DOMContentLoaded event fired, setupEventListeners, resetTimeSelector, and setupNextAudioButton called");
 
-    // Vérification de l'état du bouton nextAudioButton
+    // Vérification initiale de nextAudioButton
     const nextAudioButton = document.getElementById('nextAudioButton');
     if (nextAudioButton) {
         console.log('nextAudioButton found and initialized');
-        nextAudioButton.addEventListener('click', () => {
-            console.log('nextAudioButton clicked');
-        });
-
-        // Forcer les dimensions et la visibilité pour le test
-        nextAudioButton.style.width = '150px';
-        nextAudioButton.style.height = '50px';
-        nextAudioButton.style.backgroundColor = 'red';
-        nextAudioButton.style.display = 'block';
-        nextAudioButton.style.visibility = 'visible';
     } else {
-        console.error('nextAudioButton not found in the DOM');
+        console.error('nextAudioButton not found on initial load');
     }
 });
 
@@ -343,6 +333,8 @@ const programs = {
          console.log("Starting push-ups, hiding pompesSelectorContainer");
      });
  }
+
+
  async function playNextAudio() {
     console.log("playNextAudio called");
     if (!isAudioPlaying) {
@@ -363,6 +355,9 @@ const programs = {
         }
 
         console.log(`Playing program audio: ${programAudioPath}`);
+        console.log(`currentCombination: ${JSON.stringify(currentCombination)}`);
+        console.log(`currentAudioIndex: ${currentAudioIndex}`);
+        
         await playAudio(programAudioPath);
         updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
 
@@ -381,6 +376,8 @@ const programs = {
     }
 }
 
+
+
  
  function updateUIForAudioPlay(description, isVisible) {
      const audioDescription = document.getElementById('audioDescription');
@@ -389,7 +386,6 @@ const programs = {
      audioDescription.style.display = isVisible ? 'block' : 'none';
      document.getElementById('tapisImage').style.display = 'none';
  }
-
 
 
 
@@ -408,9 +404,6 @@ const programs = {
         console.log('Showing and resetting pompesSelectorContainer');
     } else {
         nextAudioButton.style.display = 'block';
-        nextAudioButton.style.width = '150px'; // Forcer la largeur pour diagnostiquer
-        nextAudioButton.style.height = '50px'; // Forcer la hauteur pour diagnostiquer
-        nextAudioButton.style.backgroundColor = 'red'; // Ajouter une couleur de fond pour diagnostiquer
         console.log('Next audio to play, showing nextAudioButton');
     }
 
@@ -422,7 +415,6 @@ const programs = {
     console.log('nextAudioButton visibility:', window.getComputedStyle(nextAudioButton).visibility);
     console.log('nextAudioButton client rect:', nextAudioButton.getBoundingClientRect());
 }
-
 
 
 
@@ -469,11 +461,6 @@ function setupNextAudioButton() {
         nextAudioButton.addEventListener('click', () => {
             console.log('nextAudioButton clicked');
         });
-
-        // Forcer les dimensions pour diagnostiquer le problème
-        nextAudioButton.style.width = '150px'; // Forcer la largeur pour diagnostiquer
-        nextAudioButton.style.height = '50px'; // Forcer la hauteur pour diagnostiquer
-        nextAudioButton.style.backgroundColor = 'red'; // Ajouter une couleur de fond pour diagnostiquer
 
     } else {
         console.error('nextAudioButton not found in the DOM');
