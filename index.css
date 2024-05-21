@@ -285,10 +285,12 @@ video, .video-description, .audio-description {
 
 
 
+
+
 /* Style pour le bouton returnButtonCoaching4 */
 #returnButtonCoaching4 {
-    background-color: #ffffff; /* Fond blanc */
-    color: #000000; /* Texte noir */
+    background-color: #ff0000; /* Fond rouge */
+    color: #ffffff; /* Texte blanc */
     padding: 10px 20px; /* Rembourrage pour agrandir le bouton */
     border-radius: 5px; /* Bords arrondis */
     cursor: pointer; /* Curseur pointeur pour indiquer qu'il est cliquable */
@@ -297,17 +299,16 @@ video, .video-description, .audio-description {
     font-weight: bold; /* Texte en gras */
     text-align: center; /* Alignement du texte */
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); /* Ombre pour donner du relief */
-    animation: clignoterRouge 1s infinite; /* Animation de clignotement rouge */
+    transition: background-color 0.3s, transform 0.2s; /* Transition pour les effets de survol */
 }
 
-/* Animation de clignotement rouge */
-@keyframes clignoterRouge {
-    0%, 100% {
-        background-color: #ffffff;
-        color: #000000;
-    }
-    50% {
-        background-color: #ff0000;
-        color: #000000;
-    }
+/* Effet de survol */
+#returnButtonCoaching4:hover {
+    background-color: #cc0000; /* Couleur de fond au survol */
+    transform: scale(1.05); /* Agrandissement léger au survol */
+}
+
+/* Effet lors de l'appui */
+#returnButtonCoaching4:active {
+    transform: scale(0.95); /* Rétrécissement léger lors de l'appui */
 }
