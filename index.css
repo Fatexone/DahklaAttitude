@@ -257,8 +257,8 @@ video, .video-description, .audio-description {
 }
 
 
-/* Style pour les boutons nextButton et nextButton2 */
-#nextButton, #nextButton2 {
+/* Style pour les boutons nextButton, nextButton2 et startTimerButton */
+#nextButton, #nextButton2, #startTimerButton {
     background-color: #4CAF50; /* Couleur de fond */
     color: white; /* Couleur du texte */
     padding: 10px 20px; /* Rembourrage pour agrandir le bouton */
@@ -273,12 +273,41 @@ video, .video-description, .audio-description {
 }
 
 /* Effet de survol */
-#nextButton:hover, #nextButton2:hover {
+#nextButton:hover, #nextButton2:hover, #startTimerButton:hover {
     background-color: #369636; /* Couleur de fond au survol */
     transform: scale(1.05); /* Agrandissement léger au survol */
 }
 
 /* Effet lors de l'appui */
-#nextButton:active, #nextButton2:active {
+#nextButton:active, #nextButton2:active, #startTimerButton:active {
     transform: scale(0.95); /* Rétrécissement léger lors de l'appui */
+}
+
+
+
+/* Style pour le bouton returnButtonCoaching4 */
+#returnButtonCoaching4 {
+    background-color: #ffffff; /* Fond blanc */
+    color: #000000; /* Texte noir */
+    padding: 10px 20px; /* Rembourrage pour agrandir le bouton */
+    border-radius: 5px; /* Bords arrondis */
+    cursor: pointer; /* Curseur pointeur pour indiquer qu'il est cliquable */
+    border: none; /* Pas de bordure */
+    font-size: 16px; /* Taille de la police */
+    font-weight: bold; /* Texte en gras */
+    text-align: center; /* Alignement du texte */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); /* Ombre pour donner du relief */
+    animation: clignoterRouge 1s infinite; /* Animation de clignotement rouge */
+}
+
+/* Animation de clignotement rouge */
+@keyframes clignoterRouge {
+    0%, 100% {
+        background-color: #ffffff;
+        color: #000000;
+    }
+    50% {
+        background-color: #ff0000;
+        color: #000000;
+    }
 }
