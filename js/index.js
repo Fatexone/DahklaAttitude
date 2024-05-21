@@ -1148,7 +1148,6 @@ function handleStopClick() {
 document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     setupCoaching3UI();
-    setupCoaching4UI();
     resetTimeSelector();
     initiateBlinking();
     setupTimeSelector();
