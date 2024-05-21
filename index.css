@@ -345,3 +345,40 @@ video, .video-description, .audio-description {
 #retourneMenue.clignotant {
     animation: none; /* Désactiver l'animation de clignotement */
 }
+
+
+
+/* Ajouter ce CSS à votre fichier index.css */
+
+/* Conteneur pour centrer le logo */
+#logoContainer {
+    position: relative;
+    width: 100%;
+    height: 100px; /* Ajustez cette hauteur selon la taille de votre logo */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px; /* Ajustez le marge selon vos besoins */
+}
+
+/* Animation pour le logo */
+#animatedLogo {
+    position: absolute;
+    top: 0;
+    left: -200px; /* Commence en dehors de l'écran, ajustez selon la taille de votre logo */
+    animation: moveLogo 5s linear infinite;
+}
+
+/* Définir l'animation */
+@keyframes moveLogo {
+    0% {
+        left: -200px; /* Commence en dehors de l'écran */
+    }
+    50% {
+        left: calc(100% - 200px); /* Se déplace jusqu'au bord droit de l'écran */
+    }
+    100% {
+        left: -200px; /* Retourne au début */
+    }
+}
