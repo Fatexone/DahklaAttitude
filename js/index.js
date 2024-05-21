@@ -350,8 +350,7 @@ async function playInitialAudio() {
     } else {
         console.log("Audio is currently playing or no more audio to play.");
     }
-}
-async function playCoaching4Audio() {
+}async function playCoaching4Audio() {
     if (!isAudioPlaying) {
         isAudioPlaying = true;
         try {
@@ -362,18 +361,24 @@ async function playCoaching4Audio() {
             await playAudio(wayAudioPath);
             updateUIForAudioPlay(descriptions.Coaching4[`way${currentAudioIndex + 1}`], true);
 
-            // Lecture de l'audio du programme
-            await playAudio(programPath);
-            updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
-
-            // Si c'est le dernier programme, jouer "Lastways"
+            // Vérifier si c'est le dernier programme audio
             if (currentAudioIndex === currentCombination.length - 1) {
+                // Jouer "Lastways" avant le dernier programme audio
                 await playAudio('./audio/Lastways.mp3');
                 updateUIForAudioPlay("Closing session with Lastways.", true);
+
+                // Jouer le dernier programme audio après "Lastways"
+                await playAudio(programPath);
+                updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
+
                 isLastWaysPlayed = true;
                 isAudioPlaying = false;
                 updateAudioControlButtons(true);
             } else {
+                // Jouer l'audio du programme normal
+                await playAudio(programPath);
+                updateUIForAudioPlay(descriptions.Coaching4[currentCombination[currentAudioIndex]], true);
+
                 currentAudioIndex++;
                 isAudioPlaying = false;
                 updateAudioControlButtons(false);
@@ -387,6 +392,7 @@ async function playCoaching4Audio() {
         console.log("Audio is currently playing or no more audio to play.");
     }
 }
+
 
 
  
