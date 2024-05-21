@@ -383,7 +383,6 @@ const programs = {
 
 
 
-
  function updateAudioControlButtons(isLastAudio) {
     const nextAudioButton = document.getElementById('nextAudioButton');
     const returnButton = document.getElementById('returnButtonCoaching4');
@@ -405,7 +404,6 @@ const programs = {
         console.log('Next audio to play, showing nextAudioButton');
     }
 
-
     returnButton.style.display = 'block';
     nextAudioButton.onclick = playNextAudio;
 
@@ -414,7 +412,6 @@ const programs = {
     console.log('nextAudioButton visibility:', window.getComputedStyle(nextAudioButton).visibility);
     console.log('nextAudioButton client rect:', nextAudioButton.getBoundingClientRect());
 }
-
 
 
 
@@ -463,11 +460,15 @@ function setupNextAudioButton() {
             console.log('nextAudioButton clicked');
         });
 
+        // Forcer les dimensions pour diagnostiquer le problème
+        nextAudioButton.style.width = '150px'; // Forcer la largeur pour diagnostiquer
+        nextAudioButton.style.height = '50px'; // Forcer la hauteur pour diagnostiquer
+        nextAudioButton.style.backgroundColor = 'red'; // Ajouter une couleur de fond pour diagnostiquer
+
     } else {
         console.error('nextAudioButton not found in the DOM');
     }
 }
-
 
  function setupReturnToMenuButtonCoaching4() {
      const returnButton = document.getElementById('returnButtonCoaching4');
