@@ -461,6 +461,7 @@ async function playAudio(audioPath) {
                  programSelect.selectedIndex = 0;
                  programSelect.style.display = 'block';
              }
+             initiateBlinking(); // Reinitialize blinking when returning
              console.log("UI reset, audio stopped, and all descriptions hidden.");
          });
      } else {
@@ -479,6 +480,7 @@ async function playAudio(audioPath) {
                  programSelect.selectedIndex = 0;
                  programSelect.style.display = 'block';
              }
+             initiateBlinking(); // Reinitialize blinking when returning
              console.log("UI reset, audio stopped, and all descriptions hidden.");
          });
      } else {
@@ -789,8 +791,14 @@ document.addEventListener('DOMContentLoaded', function() {
     setupTimeSelector();
 });
 
+let blinkingIntervals = [];
+
 function initiateBlinking() {
     const selectors = ['timeDurationSelector', 'programSelect', 'pompesSelector'];
+
+    // Clear any existing intervals before starting new ones
+    blinkingIntervals.forEach(interval => clearInterval(interval));
+    blinkingIntervals = [];
 
     selectors.forEach(selectorId => {
         const selector = document.getElementById(selectorId);
@@ -806,9 +814,14 @@ function initiateBlinking() {
                     selector.style.backgroundColor = 'white';
                 }
             }, 500);
+
+            blinkingIntervals.push(blinkingInterval); // Keep track of the interval
         }
     });
 }
+
+
+
 function setupRetourneMenueButton() {
     const retourneMenue = document.getElementById('retourneMenue');
     if (retourneMenue) {
