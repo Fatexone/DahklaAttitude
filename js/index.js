@@ -192,12 +192,22 @@ const programs = {
     setupNextAudioButton();
     console.log("DOMContentLoaded event fired, setupEventListeners, resetTimeSelector, and setupNextAudioButton called");
 
-    // Vérification initiale de nextAudioButton
+    // Vérification de l'état du bouton nextAudioButton
     const nextAudioButton = document.getElementById('nextAudioButton');
     if (nextAudioButton) {
         console.log('nextAudioButton found and initialized');
+        nextAudioButton.addEventListener('click', () => {
+            console.log('nextAudioButton clicked');
+        });
+
+        // Forcer les dimensions et la visibilité pour le test
+        nextAudioButton.style.width = '150px';
+        nextAudioButton.style.height = '50px';
+        nextAudioButton.style.backgroundColor = 'red';
+        nextAudioButton.style.display = 'block';
+        nextAudioButton.style.visibility = 'visible';
     } else {
-        console.error('nextAudioButton not found on initial load');
+        console.error('nextAudioButton not found in the DOM');
     }
 });
 
