@@ -399,8 +399,12 @@ const programs = {
         console.log('Showing and resetting pompesSelectorContainer');
     } else {
         nextAudioButton.style.display = 'block';
+        nextAudioButton.style.width = '150px'; // Forcer la largeur pour diagnostiquer
+        nextAudioButton.style.height = '50px'; // Forcer la hauteur pour diagnostiquer
+        nextAudioButton.style.backgroundColor = 'red'; // Ajouter une couleur de fond pour diagnostiquer
         console.log('Next audio to play, showing nextAudioButton');
     }
+
 
     returnButton.style.display = 'block';
     nextAudioButton.onclick = playNextAudio;
