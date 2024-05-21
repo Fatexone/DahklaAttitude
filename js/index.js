@@ -875,8 +875,8 @@ function handleStartTimer() {
         stopButton.textContent = 'Pause'; // Initialiser le texte du bouton stopButton à 'Pause'
         timeSelector.style.display = 'none'; // Masquer le sélecteur de temps
         tapisImage2.style.display = 'none';
-        // Afficher la première description audio
 
+        // Afficher la première description audio
         const audioDescriptionCoaching3 = document.getElementById('audioDescriptionCoaching3');
         if (audioDescriptionCoaching3) {
             const selectedAudioKey = audioKeys[audioIndex];
