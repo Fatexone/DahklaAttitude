@@ -189,8 +189,8 @@ const programs = {
  document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     resetTimeSelector();
-    // Initialisation correcte du bouton nextAudioButton
     setupNextAudioButton();
+    console.log("DOMContentLoaded event fired, setupEventListeners, resetTimeSelector, and setupNextAudioButton called");
 });
 
  function debugLog(message) {
@@ -322,6 +322,7 @@ const programs = {
          toggleDisplay('pompesSelectorContainer', false); // Masquer le sélecteur de pompes
          playNextAudio();
          this.style.display = 'none';
+         console.log("Starting push-ups, hiding pompesSelectorContainer");
      });
  }
  async function playNextAudio() {
@@ -376,16 +377,16 @@ const programs = {
 
     if (isLastAudio) {
         nextAudioButton.style.display = 'none';
-        console.log("Last audio played, nextAudioButton hidden");
+        console.log('Last audio played, hiding nextAudioButton');
 
         // Réinitialiser et afficher le sélecteur de pompes
         const pompesSelector = document.getElementById('pompesSelector');
         pompesSelector.selectedIndex = 0; // Réinitialiser à la valeur par défaut
         toggleDisplay('pompesSelectorContainer', true); // Afficher le sélecteur de pompes
-        console.log("Pompes selector reset and displayed");
+        console.log('Showing and resetting pompesSelectorContainer');
     } else {
         nextAudioButton.style.display = 'block';
-        console.log("nextAudioButton displayed for next audio");
+        console.log('Next audio to play, showing nextAudioButton');
     }
     returnButton.style.display = 'block';
     nextAudioButton.onclick = playNextAudio;
@@ -417,6 +418,13 @@ const programs = {
      });
  }
  
+
+ function setupCoaching4UI() {
+    console.log("Setting up Coaching4 UI...");
+    // Any setup logic for Coaching4 can be added here
+}
+
+
  function setupNextAudioButton() {
     const nextAudioButton = document.getElementById('nextAudioButton');
     if (nextAudioButton) {
