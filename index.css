@@ -312,3 +312,36 @@ video, .video-description, .audio-description {
 #returnButtonCoaching4:active {
     transform: scale(0.95); /* Rétrécissement léger lors de l'appui */
 }
+
+
+
+/* Style pour le bouton retourneMenue */
+#retourneMenue {
+    background-color: #ff0000; /* Fond rouge */
+    color: #ffffff; /* Texte blanc */
+    padding: 10px 20px; /* Rembourrage pour agrandir le bouton */
+    border-radius: 5px; /* Bords arrondis */
+    cursor: pointer; /* Curseur pointeur pour indiquer qu'il est cliquable */
+    border: none; /* Pas de bordure */
+    font-size: 16px; /* Taille de la police */
+    font-weight: bold; /* Texte en gras */
+    text-align: center; /* Alignement du texte */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); /* Ombre pour donner du relief */
+    transition: background-color 0.3s, transform 0.2s; /* Transition pour les effets de survol */
+}
+
+/* Effet de survol */
+#retourneMenue:hover {
+    background-color: #cc0000; /* Couleur de fond au survol */
+    transform: scale(1.05); /* Agrandissement léger au survol */
+}
+
+/* Effet lors de l'appui */
+#retourneMenue:active {
+    transform: scale(0.95); /* Rétrécissement léger lors de l'appui */
+}
+
+/* Supprimer l'animation de clignotement pour retourneMenue */
+#retourneMenue.clignotant {
+    animation: none; /* Désactiver l'animation de clignotement */
+}
