@@ -255,3 +255,30 @@ video, .video-description, .audio-description {
 #nextAudioButton:active {
     transform: scale(0.95); /* Rétrécissement léger lors de l'appui */
 }
+
+
+/* Style pour les boutons nextButton et nextButton2 */
+#nextButton, #nextButton2 {
+    background-color: #4CAF50; /* Couleur de fond */
+    color: white; /* Couleur du texte */
+    padding: 10px 20px; /* Rembourrage pour agrandir le bouton */
+    border-radius: 5px; /* Bords arrondis */
+    cursor: pointer; /* Curseur pointeur pour indiquer qu'il est cliquable */
+    border: none; /* Pas de bordure */
+    font-size: 16px; /* Taille de la police */
+    font-weight: bold; /* Texte en gras */
+    text-align: center; /* Alignement du texte */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); /* Ombre pour donner du relief */
+    transition: background-color 0.3s, transform 0.2s; /* Transition pour les effets de survol */
+}
+
+/* Effet de survol */
+#nextButton:hover, #nextButton2:hover {
+    background-color: #369636; /* Couleur de fond au survol */
+    transform: scale(1.05); /* Agrandissement léger au survol */
+}
+
+/* Effet lors de l'appui */
+#nextButton:active, #nextButton2:active {
+    transform: scale(0.95); /* Rétrécissement léger lors de l'appui */
+}
