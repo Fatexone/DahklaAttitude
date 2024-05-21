@@ -790,20 +790,25 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initiateBlinking() {
-    var selector = document.getElementById('timeDurationSelector');
-    var isDefault = true; // Assumer qu'on est sur l'option par défaut au début
+    const selectors = ['timeDurationSelector', 'programSelect', 'pompesSelector'];
 
-    var blinkingInterval = setInterval(() => {
-        if (selector.value === "") {
-            selector.style.backgroundColor = isDefault ? 'yellow' : 'white';
-            isDefault = !isDefault; // Bascule la couleur
-        } else {
-            clearInterval(blinkingInterval);
-            selector.style.backgroundColor = 'white'; // Restaurer la couleur de fond normale
+    selectors.forEach(selectorId => {
+        const selector = document.getElementById(selectorId);
+        let isDefault = true;
+
+        if (selector) {
+            const blinkingInterval = setInterval(() => {
+                if (selector.value === "") {
+                    selector.style.backgroundColor = isDefault ? 'yellow' : 'white';
+                    isDefault = !isDefault;
+                } else {
+                    clearInterval(blinkingInterval);
+                    selector.style.backgroundColor = 'white';
+                }
+            }, 500);
         }
-    }, 500);
+    });
 }
-
 function setupRetourneMenueButton() {
     const retourneMenue = document.getElementById('retourneMenue');
     if (retourneMenue) {
