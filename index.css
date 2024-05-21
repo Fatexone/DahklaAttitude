@@ -17,7 +17,7 @@ button.clignotant, select.clignotant {
     animation: clignoter 1s infini;
 }
 
-/* CSS existant */
+/* CSS existant version 12*/
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,500&display=swap');
 
 body, html {
