@@ -1,3 +1,23 @@
+/* Ajouter ce CSS à votre fichier index.css */
+
+/* Animation de clignotement */
+@keyframes clignoter {
+    0%, 100% {
+        background-color: #ffffff;
+        color: #000000;
+    }
+    50% {
+        background-color: #cccccc;
+        color: #000000;
+    }
+}
+
+/* Appliquer l'animation aux boutons et sélecteurs */
+button.clignotant, select.clignotant {
+    animation: clignoter 1s infini;
+}
+
+/* CSS existant */
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,500&display=swap');
 
 body, html {
@@ -208,11 +228,6 @@ video, .video-description, .audio-description {
     bottom: 10px;
     right: 10px;
 }
-
-
-
-
-
 
 /* Initialisation du style pour masquer le bouton nextAudioButton */
 #nextAudioButton {
